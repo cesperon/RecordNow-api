@@ -3,18 +3,24 @@ const path = require("path");
 const app = express();
 const sequelize = require("sequelize");
 const db = require("./models");
+require("dotenv").config();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-db.sequelize.sync().then(() => {
-  app.listen(3000, (req, res) => {
-    console.log("listening on port 3000");
-  });
-
-  require("./bootfiles/db")();
+app.listen(process.env.PORT, (req, res) => {
   require("./bootfiles/routes")(app);
-  app.get("/", (req, res) => {
-    res.send("welcome to home page");
-  });
+  console.log("listening on port 3000");
 });
+
+//for future storage using aws and pg
+// db.sequelize.sync().then(() => {
+//   app.listen(3000, (req, res) => {
+//     console.log("listening on port 3000");
+//   });
+
+//   require("./bootfiles/db")();
+//   require("./bootfiles/routes")(app);
+//   app.get("/", (req, res) => {
+//     res.send("welcome to home page");
+//   });
+// });
