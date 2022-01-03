@@ -7,7 +7,7 @@ require("dotenv").config();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.listen(process.env.PORT, (req, res) => {
+app.listen(3000, (req, res) => {
   require("./bootfiles/routes")(app);
   console.log("listening on port 3000");
 });
