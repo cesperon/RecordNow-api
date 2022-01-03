@@ -6,7 +6,6 @@ module.exports = (app) => {
   // middleware
   app.use(
     cors({
-      // origin: ["http://localhost:5500", "http://localhost"],
       credentials: true,
     })
   );
