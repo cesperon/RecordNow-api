@@ -55,7 +55,7 @@ const UpdateRecordName = (req, res) => {
     `public/uploads/${req.body.fileName}`,
     `public/uploads/${req.body.newFileName}`,
     (req, res) => {
-      return responseHandler(res, false, "", output, responseCodes.SUCCESS);
+      console.log("upload success");
     }
   );
   return responseHandler(res, false, "", [], responseCodes.SUCCESS);
