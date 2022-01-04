@@ -16,32 +16,32 @@ const parseRecords = async (files) => {
         fs.readFileAsync(`public/uploads/${file}`, { encoding: "base64" })
       );
     }
-    console.log("audioarray", audioArray);
-
     return Promise.all(audioArray);
   } catch (err) {
     console.log(err);
   }
 };
 
-//get all record names, names array maps to wav array. Record name @ index 1 belongs to wav file @ index 1.
-const getRecordNames = async (req, res) => {
-  try {
-    const recordNames = await fs.readdirAsync(`public/uploads`);
-    return responseHandler(res, false, "", recordNames, responseCodes.SUCCESS);
-  } catch (err) {
-    console.log(err);
-    return responseHandler(res, false, "", [], responseCodes.ERROR);
-  }
-};
 //get all record wav files from disk
-const GetRecords = (req, res) => {
+const GetRecords = async (req, res) => {
   //all files in audio folder return a based 64 encoded blob to be manipulated on client
+  const recordNames = await fs.readdirAsync(`public/uploads`);
   fs.readdirAsync(`public/uploads`)
     .then(parseRecords)
     .then((results) => {
       console.log("results", results);
-      return responseHandler(res, false, "", results, responseCodes.SUCCESS);
+      //build a response object of recordNames and blobs that map to same index.
+      //iterate through record name array, as we itertate we create a new object
+      //where the audio key = base 64 encoded blob and the name key is the audio name
+      //we get by grabbing the name then the corresponding blob with the same index
+      //in blob array.
+      const output = [];
+      console.log("record", recordNames);
+      for (let [index, record] of recordNames.entries()) {
+        output.push({ name: record, audio: results[index] });
+      }
+      console.log("output", output);
+      return responseHandler(res, false, "", output, responseCodes.SUCCESS);
     })
     .catch((err) => {
       console.log(err);
@@ -53,9 +53,10 @@ const UpdateRecordName = (req, res) => {
   console.log("updateRecord", req.body);
   fs.rename(
     `public/uploads/${req.body.fileName}`,
-    fs.rename(`public/uploads/${req.body.newFileName}`, (req, res) => {
-      console.log("sucessful update");
-    })
+    `public/uploads/${req.body.newFileName}`,
+    (req, res) => {
+      return responseHandler(res, false, "", output, responseCodes.SUCCESS);
+    }
   );
   return responseHandler(res, false, "", [], responseCodes.SUCCESS);
 };
@@ -71,6 +72,6 @@ const DeleteRecord = (req, res) => {
 module.exports = {
   GetRecords,
   DeleteRecord,
-  getRecordNames,
   UpdateRecordName,
+  // PostRecord,
 };
